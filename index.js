@@ -1,7 +1,7 @@
 var app = angular.module('app', ["ngSanitize"]);
 
 
-var snd = new Audio("Tick-DeepFrozenApps-397275646.mp3"); // buffers automatically when created
+var snd = new Audio("Tick-DeepFrozenApps-397275646.mp3");
 
 app.controller('MainCtrl', ["$scope", "$interval", "$timeout", "$log", function ($scope, $interval, $timeout, $log) {
     var self = this;
@@ -15,8 +15,17 @@ app.controller('MainCtrl', ["$scope", "$interval", "$timeout", "$log", function 
         self.beatTimer = null;
     };
 
+    self.updateUiVariables = function () {
+        if (self.interval) {
+            self.timeToNextBeat = self.nextBeatTime - new Date().getTime();
+        } else {
+            self.timeToNextBeat = null;
+        }
+    }
+
     self.getTimeToNextBeat = function () {
-        return self.nextBeatTime - new Date().getTime();
+        console.log("getTimeToNextBeat");
+        return;
     };
 
     self.onPress = function () {
@@ -45,33 +54,30 @@ app.controller('MainCtrl', ["$scope", "$interval", "$timeout", "$log", function 
         self.nextBeatTime = new Date().getTime() + self.interval;
     };
 
-    self.getNextBeatTime = function () {
-        /*
-         * Sample:
-         * now: 450
-         * diff: 100
-         * lastPress: 200
-         *
-         * result: 500
-         */
-        var now = new Date().getTime();
-        var milisSinceLastPress = now - self.lastPress;
-        var milisSinceLastBeat = milisSinceLastPress % self.interval; // 50
-        var lastBeat = now - milisSinceLastBeat;
-        return lastBeat + self.interval;
-    };
+// self.getNextBeatTime = function () {
+//     /*
+//      * Sample:
+//      * now: 450
+//      * diff: 100
+//      * lastPress: 200
+//      *
+//      * result: 500
+//      */
+//     var now = new Date().getTime();
+//     var milisSinceLastPress = now - self.lastPress;
+//     var milisSinceLastBeat = milisSinceLastPress % self.interval; // 50
+//     var lastBeat = now - milisSinceLastBeat;
+//     return lastBeat + self.interval;
+// };
 
 
-    // self.intervalPromise = $interval(function () {
-    //     if (self.interval) {
-    //         self.timeToNextBeat = self.getNextBeatTime() - new Date().getTime();
-    //     } else {
-    //         self.timeToNextBeat = null;
-    //     }
-    // }, 10);
+    self.intervalPromise = $interval(function () {
+        self.updateUiVariables();
+    }, 100);
 
 
     self.onReset();
 
 
-}]);
+}])
+;

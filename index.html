@@ -10,7 +10,6 @@
     <meta name="description" content="Mailbox">
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="angular-stickyfill-0.1.0/angular-stickyfill.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css"
           integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
 </head>
@@ -23,9 +22,7 @@
     <br>    diff: {{$ctrl.interval}}
     <br>    presses: {{$ctrl.lastPress}}
 
-    <progress max="{{$ctrl.interval}}" value="{{$ctrl.interval - $ctrl.timeToNextBeat}}"></progress>
-    <br>
-    next: {{$ctrl.getTimeToNextBeat()}}
+    <progress height="200px" width="400px" max="{{$ctrl.interval}}" value="{{$ctrl.interval - $ctrl.timeToNextBeat}}"></progress> {{$ctrl.timeToNextBeat}}
 </div>
 
 
