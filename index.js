@@ -1,25 +1,33 @@
-var app = angular.module('app', ["ngSanitize"]);
+var app = angular.module('app', []);
 
 
-var snd = new Audio("Tick-DeepFrozenApps-397275646.mp3");
+var snd = new Audio("click-short.wav");
 
-app.controller('MainCtrl', ["$scope", "$interval", "$timeout", "$log", function ($scope, $interval, $timeout, $log) {
+app.controller('MainCtrl', ["$interval", "$timeout", function ($interval, $timeout) {
     var self = this;
 
 
     self.onReset = function () {
+        self.mode = "init";
         self.lastPress = null;
         self.interval = null;
         self.timeToNextBeat = null;
         $interval.cancel(self.beatTimer);
         self.beatTimer = null;
+        self.timeSinceLastPress = null;
     };
 
     self.updateUiVariables = function () {
+        if (self.lastPress) {
+            self.timeSinceLastPress = new Date().getTime() - self.lastPress
+        }
         if (self.interval) {
             self.timeToNextBeat = self.nextBeatTime - new Date().getTime();
+            // self.progressPercent = 100.0 / self.interval * (self.interval- self.timeToNextBeat);
+            self.progressPercent = 100.0 - 100.0 / self.interval * self.timeToNextBeat;
         } else {
             self.timeToNextBeat = null;
+            self.progressPercent = null;
         }
     }
 
@@ -28,11 +36,19 @@ app.controller('MainCtrl', ["$scope", "$interval", "$timeout", "$log", function 
         return;
     };
 
-    self.onPress = function () {
+    self.onStart = function () {
         var now = new Date().getTime();
-        if (self.lastPress) {
-            self.interval = now - self.lastPress;
-        }
+        self.mode = "measure";
+        self.lastPress = now;
+
+        self.onBeat();
+    };
+
+    self.onMeasure = function () {
+
+        var now = new Date().getTime();
+        self.mode = "play";
+        self.interval = now - self.lastPress;
         self.lastPress = now;
 
         self.onBeat();
@@ -54,26 +70,10 @@ app.controller('MainCtrl', ["$scope", "$interval", "$timeout", "$log", function 
         self.nextBeatTime = new Date().getTime() + self.interval;
     };
 
-// self.getNextBeatTime = function () {
-//     /*
-//      * Sample:
-//      * now: 450
-//      * diff: 100
-//      * lastPress: 200
-//      *
-//      * result: 500
-//      */
-//     var now = new Date().getTime();
-//     var milisSinceLastPress = now - self.lastPress;
-//     var milisSinceLastBeat = milisSinceLastPress % self.interval; // 50
-//     var lastBeat = now - milisSinceLastBeat;
-//     return lastBeat + self.interval;
-// };
-
 
     self.intervalPromise = $interval(function () {
         self.updateUiVariables();
-    }, 100);
+    }, 33);
 
 
     self.onReset();

@@ -10,22 +10,46 @@
     <meta name="description" content="Mailbox">
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css"
-          integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+
 </head>
 <body>
 
-<div ng-controller="MainCtrl as $ctrl" ng-cloak>
-    <button ng-click="$ctrl.onReset()">Reset</button>
-    <p></p>
-    <button ng-click="$ctrl.onPress()">Press</button>
-    <br>    diff: {{$ctrl.interval}}
-    <br>    presses: {{$ctrl.lastPress}}
+<div class="container">
+    <div ng-controller="MainCtrl as $ctrl" ng-cloak>
 
-    <progress height="200px" width="400px" max="{{$ctrl.interval}}" value="{{$ctrl.interval - $ctrl.timeToNextBeat}}"></progress> {{$ctrl.timeToNextBeat}}
+        <div ng-if="$ctrl.mode=='init'">
+            <button type="button" class="btn btn-primary btn-lg" ng-click="$ctrl.onStart()">Start</button>
+        </div>
+        <div ng-if="$ctrl.mode=='measure'">
+            <button type="button" class="btn btn-primary btn-lg" ng-click="$ctrl.onMeasure()">Stop</button>
+            <h1> Duration: {{$ctrl.timeSinceLastPress / 1000 | number:1}} s</h1>
+        </div>
+
+        <div ng-if="$ctrl.mode=='play'">
+            <button type="button" class="btn btn-danger btn-lg" ng-click="$ctrl.onReset()">Reset</button>
+            <h1> Interval: {{$ctrl.interval / 1000 | number:1}} s</h1>
+
+            <div class="progress">
+                <div class="progress-bar" role="progressbar"
+                     style="width: {{$ctrl.progressPercent}}%">
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
 </div>
-
-
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-sanitize.js"></script>
