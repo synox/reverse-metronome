@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="de" ng-app="app" ng-strict-di>
+<head>
+    <meta charset="utf-8">
+    <title>Reverse Metronome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="description" content="Mailbox">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="angular-stickyfill-0.1.0/angular-stickyfill.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css"
+          integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+</head>
+<body>
+
+<div ng-controller="MainCtrl as $ctrl" ng-cloak>
+    <button ng-click="$ctrl.onReset()">Reset</button>
+    <p></p>
+    <button ng-click="$ctrl.onPress()">Press</button>
+    <br>    diff: {{$ctrl.interval}}
+    <br>    presses: {{$ctrl.lastPress}}
+
+    <progress max="{{$ctrl.interval}}" value="{{$ctrl.interval - $ctrl.timeToNextBeat}}"></progress>
+    <br>
+    next: {{$ctrl.getTimeToNextBeat()}}
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-sanitize.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/1.2.0/Autolinker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.4/chance.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stickyfill/1.1.4/stickyfill.min.js"></script>
+<script src="angular-stickyfill-0.1.0/angular-stickyfill.js"></script>
+<script src="index.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.js"></script>
+
+
+<br><br><br><br><br><br><br><br><br>
+<div>sound by <a href="http://soundbible.com/2044-Tick.html">DeepFrozenApps</a></div>
+</body>
+</html>
