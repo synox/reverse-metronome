@@ -7,9 +7,9 @@ app.controller('MainCtrl', ["$interval", function ($interval) {
     var self = this;
 
     self.onReset = function () {
-        self.mode = "init";
-        self.lastPress = null;
-        self.interval = null;
+        self.times = [];
+        self.average = null;
+        self.lastBeat= null;
         $interval.cancel(self.beatTimer);
         self.beatTimer = null;
         self.timeSinceLastPress = null;
@@ -17,43 +17,36 @@ app.controller('MainCtrl', ["$interval", function ($interval) {
     };
 
     self.updateUiVariables = function () {
-        if (self.mode == "init") {
-            return;
-        } else if (self.mode == "measure") {
-            self.timeSinceLastPress = new Date().getTime() - self.lastPress
-
-        } else if (self.mode == "play") {
-            var timeToNextBeat = self.nextBeatTime - new Date().getTime();
-            self.progressPercent = 100.0 - 100.0 / self.interval * timeToNextBeat;
-        }
+            // self.timeSinceLastPress = new Date().getTime() - self.lastPress
+            // var timeToNextBeat = self.nextBeatTime - new Date().getTime();
+            // self.progressPercent = 100.0 - 100.0 / self.average * timeToNextBeat;
     }
 
     self.onBeat = function () {
         snd.play();
-        self.nextBeatTime = new Date().getTime() + self.interval;
-    };
-
-    self.onStart = function () {
-        var now = new Date().getTime();
-        self.lastPress = now;
-
-        self.onBeat();
-        self.mode = "measure";
+        self.lastBeat = new Date().getTime()
     };
 
     self.onMeasure = function () {
-        var now = new Date().getTime();
-        self.interval = now - self.lastPress;
-        self.lastPress = now;
+        self.times.push(new Date().getTime())
+        var diffs = [];
+        var sumOfDiffs = 0;
+        for (var i = 0; i < self.times.length - 1; i++) {
+            var diff = self.times[i + 1] - self.times[i];
+            diffs.push(diff);
+            sumOfDiffs += diff;
+        }
+        self.average = sumOfDiffs / diffs.length;
 
-        $interval.cancel(self.beatTimer);
-        self.beatTimer = $interval(function () {
+        self.lastBeat = new Date().getTime()
+
+        if (diffs.length) {
             self.onBeat();
-        }, self.interval);
-
-        self.onBeat();
-        self.mode = "play";
-
+            $interval.cancel(self.beatTimer);
+            self.beatTimer = $interval(function () {
+                self.onBeat();
+            }, self.average);
+        }
     };
 
     self.intervalPromise = $interval(function () {

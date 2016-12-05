@@ -24,24 +24,24 @@
 <body>
 <div class="container" ng-controller="MainCtrl as $ctrl" ng-cloak>
 
-    <div ng-if="$ctrl.mode=='init'">
-        <button type="button" class="btn btn-primary btn-lg" ng-click="$ctrl.onStart()">Start</button>
-    </div>
-    <div ng-if="$ctrl.mode=='measure'">
-        <button type="button" class="btn btn-primary btn-lg" ng-click="$ctrl.onMeasure()">Stop</button>
-        <h1> Duration: {{$ctrl.timeSinceLastPress / 1000 | number:1}} s</h1>
-    </div>
+    <button type="button" class="btn btn-primary btn-lg" ng-click="$ctrl.onMeasure()">Tap to record a beat</button>
 
-    <div ng-if="$ctrl.mode=='play'">
+    <br/>
+    <span ng-if="$ctrl.times.length == 1">Tap more to measure</span>
+
+    <div ng-if="$ctrl.average">
+        <h1> Average: {{$ctrl.average / 1000 | number:2}} s</h1>
+
+        <!--<div class="progress">-->
+            <!--<div class="progress-bar" role="progressbar"-->
+                 <!--style="width: {{$ctrl.progressPercent}}%">-->
+            <!--</div>-->
+        <!--</div>-->
+
         <button type="button" class="btn btn-danger btn-lg" ng-click="$ctrl.onReset()">Reset</button>
-        <h1> Interval: {{$ctrl.interval / 1000 | number:1}} s</h1>
-
-        <div class="progress">
-            <div class="progress-bar" role="progressbar"
-                 style="width: {{$ctrl.progressPercent}}%">
-            </div>
-        </div>
     </div>
+
+</div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
