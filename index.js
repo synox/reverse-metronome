@@ -1,6 +1,7 @@
 var app = angular.module('app', []);
 
 var snd = new Audio("click-short.wav");
+var MAX_SAMPLES = 6;
 
 app.controller('MainCtrl', ["$interval", function ($interval) {
     var self = this;
@@ -34,6 +35,11 @@ app.controller('MainCtrl', ["$interval", function ($interval) {
             }
             self.diffs.push(diff);
 
+            // remove oldest samples:
+            if (self.diffs.length > MAX_SAMPLES){
+                self.diffs.splice(0, self.diffs.length - MAX_SAMPLES);
+            }
+
             var sumOfDiffs = self.diffs.reduce(function (v1, v2) {
                 return v1 + v2;
             }, 0);
@@ -52,7 +58,7 @@ app.controller('MainCtrl', ["$interval", function ($interval) {
         self.lastPressedBeat = now;
     };
 
-    Update UI with 25fps (1000 / 25 = 40)
+    // Update UI with 25fps (1000 / 25 = 40)
     self.intervalPromise = $interval(function () {
         var timeSinceLastBeat = new Date().getTime() - self.lastBeat ;
         self.progressPercent = 100.0 / self.interval * timeSinceLastBeat;
