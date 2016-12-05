@@ -1,26 +1,18 @@
 var app = angular.module('app', []);
 
-
 var snd = new Audio("click-short.wav");
 
 app.controller('MainCtrl', ["$interval", function ($interval) {
     var self = this;
 
     self.onReset = function () {
-        self.times = [];
-        self.average = null;
-        self.lastBeat= null;
+        self.diffs = [];
+        self.interval = null;
+        self.lastBeat = null;
+        self.lastPressedBeat = null;
         $interval.cancel(self.beatTimer);
-        self.beatTimer = null;
-        self.timeSinceLastPress = null;
         self.progressPercent = 0;
     };
-
-    self.updateUiVariables = function () {
-            // self.timeSinceLastPress = new Date().getTime() - self.lastPress
-            // var timeToNextBeat = self.nextBeatTime - new Date().getTime();
-            // self.progressPercent = 100.0 - 100.0 / self.average * timeToNextBeat;
-    }
 
     self.onBeat = function () {
         snd.play();
@@ -28,31 +20,43 @@ app.controller('MainCtrl', ["$interval", function ($interval) {
     };
 
     self.onMeasure = function () {
-        self.times.push(new Date().getTime())
-        var diffs = [];
-        var sumOfDiffs = 0;
-        for (var i = 0; i < self.times.length - 1; i++) {
-            var diff = self.times[i + 1] - self.times[i];
-            diffs.push(diff);
-            sumOfDiffs += diff;
-        }
-        self.average = sumOfDiffs / diffs.length;
+        var now = new Date().getTime();
+        if (self.lastBeat) {
+            var diff = now - self.lastPressedBeat;
+            // if we missed more than 1 beat, measure since last beat
+            if ( diff > self.interval * 2){
+                diff = now - self.lastBeat;
+                // if the difference is small, measure since previous beat
+                // if we hit just after the beat, we have to increase the interval (instead of setting a very short one)
+                if ( diff < self.interval / 3) {
+                    diff += self.interval;
+                }
+            }
+            self.diffs.push(diff);
 
-        self.lastBeat = new Date().getTime()
+            var sumOfDiffs = self.diffs.reduce(function (v1, v2) {
+                return v1 + v2;
+            }, 0);
 
-        if (diffs.length) {
+            // average:
+            self.interval = sumOfDiffs / self.diffs.length;
+
             self.onBeat();
             $interval.cancel(self.beatTimer);
             self.beatTimer = $interval(function () {
                 self.onBeat();
-            }, self.average);
+            }, self.interval);
         }
+
+        self.lastBeat = now;
+        self.lastPressedBeat = now;
     };
 
+    Update UI with 25fps (1000 / 25 = 40)
     self.intervalPromise = $interval(function () {
-        self.updateUiVariables();
-    }, 100);
-
+        var timeSinceLastBeat = new Date().getTime() - self.lastBeat ;
+        self.progressPercent = 100.0 / self.interval * timeSinceLastBeat;
+    }, 40);
 
     self.onReset();
 

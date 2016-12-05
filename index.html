@@ -27,21 +27,19 @@
     <button type="button" class="btn btn-primary btn-lg" ng-click="$ctrl.onMeasure()">Tap to record a beat</button>
 
     <br/>
-    <span ng-if="$ctrl.times.length == 1">Tap more to measure</span>
+    <span ng-if="$ctrl.lastPressedBeat && $ctrl.diffs.length == 0">Tap again to start</span>
 
-    <div ng-if="$ctrl.average">
-        <h1> Average: {{$ctrl.average / 1000 | number:2}} s</h1>
+    <div ng-if="$ctrl.interval">
+        <h1> Average: {{$ctrl.interval / 1000 | number:2}} s</h1>
 
-        <!--<div class="progress">-->
-            <!--<div class="progress-bar" role="progressbar"-->
-                 <!--style="width: {{$ctrl.progressPercent}}%">-->
-            <!--</div>-->
-        <!--</div>-->
+        <div class="progress">
+            <div class="progress-bar" role="progressbar"
+                 style="width: {{$ctrl.progressPercent}}%">
+            </div>
+        </div>
 
         <button type="button" class="btn btn-danger btn-lg" ng-click="$ctrl.onReset()">Reset</button>
     </div>
-
-</div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
