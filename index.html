@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de" ng-app="app" ng-strict-di>
+<html lang="de">
 <head>
     <meta charset="utf-8">
     <title>Reverse Metronome</title>
@@ -22,27 +22,25 @@
     </style>
 </head>
 <body>
-<div class="container" ng-controller="MainCtrl as $ctrl" ng-cloak>
+<div class="container">
 
-    <button type="button" class="btn btn-primary btn-lg" ng-click="$ctrl.onMeasure()">Tap to record a beat</button>
-
+    <button type="button" id="measureButton" class="btn btn-primary btn-lg">
+        Tap to record a beat
+    </button>
     <br/>
-    <span ng-if="$ctrl.lastPressedBeat && $ctrl.diffs.length == 0">Tap again to start</span>
+    <span id="pressAgain">Tap again to start</span>
 
-    <div ng-if="$ctrl.interval">
-        <h1> Average: {{$ctrl.interval / 1000 | number:2}} s</h1>
+    <div id="playDetails" ng-if="$ctrl.interval">
+        <h1>Interval: <span id="interval"></span></h1>
 
         <div class="progress">
-            <div class="progress-bar" role="progressbar"
-                 style="width: {{$ctrl.progressPercent}}%">
-            </div>
+            <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
         </div>
 
-        <button type="button" class="btn btn-danger btn-lg" ng-click="$ctrl.onReset()">Stop</button>
+        <button id="stopButton" type="button" class="btn btn-danger btn-lg">Stop</button>
     </div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.2/howler.core.min.js"></script>
 <script src="index.js"></script>
 </body>
