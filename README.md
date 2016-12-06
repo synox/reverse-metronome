@@ -1,6 +1,8 @@
 # Simple reverse metronome
 
-You tap, tap, tap and the metronome will continue with the same temp. 
+You tap, tap, tap and the metronome will continue with the same tempo. 
+
+Try the [demo](https://synox.github.io/reverse-metronome/index.html).
 
 # Tech Background
 
