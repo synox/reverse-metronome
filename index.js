@@ -7,31 +7,23 @@ var MAX_SAMPLES = 6;
 var metronome = null;
 var beatTimer = null;
 
-var onReset = function () {
+var resetMetronome = function () {
     metronome = {
         diffs: [],
         interval: null,
         lastBeat: null,
-        lastPressedBeat: null,
-        progressPercent: 0
+        lastPressedBeat: null
     };
-
     clearInterval(beatTimer);
     document.getElementById("playDetails").style.visibility = 'hidden';
     document.getElementById("pressAgain").style.visibility = 'hidden';
 };
 
-var updateUi = function () {
-    var timeSinceLastBeat = new Date().getTime() - metronome.lastBeat;
-    var progressPercent = 100.0 / metronome.interval * timeSinceLastBeat;
-    document.getElementById("progress-bar").style.width = progressPercent + "%";
-}
+document.getElementById("stopButton").onclick = resetMetronome;
 
-var onBeat = function () {
-    document.getElementById("progress-bar").style.width = "100%";
+var playBeat = function () {
     sound.play();
     metronome.lastBeat = new Date().getTime()
-
 };
 
 document.getElementById("measureButton").onclick = function () {
@@ -60,32 +52,31 @@ document.getElementById("measureButton").onclick = function () {
 
         // average:
         metronome.interval = sumOfDiffs / metronome.diffs.length;
+        var intervalSeconds = metronome.interval / 1000
+        document.getElementById("interval").textContent = Math.round(intervalSeconds * 100) / 100 + "s";
+
+        playBeat();
+        clearInterval(beatTimer);
+        beatTimer = setInterval(playBeat, metronome.interval);
 
         document.getElementById("playDetails").style.visibility = 'visible';
-
-        var miliseconds = metronome.interval / 1000
-        document.getElementById("interval").textContent = Math.round(miliseconds * 100) / 100 + "s";
-
-        onBeat();
-        clearInterval(beatTimer);
-        beatTimer = setInterval(function () {
-            onBeat();
-        }, metronome.interval);
         document.getElementById("pressAgain").style.visibility = 'hidden';
     } else {
         document.getElementById("pressAgain").style.visibility = 'visible';
     }
 
+    console.log(metronome.diffs);
+
     metronome.lastBeat = now;
     metronome.lastPressedBeat = now;
 };
 
-document.getElementById("stopButton").onclick = onReset;
 
 // Update UI with 25fps
-var uiUpdateTimer = setInterval(updateUi, 1000 / 25);
+setInterval(function () {
+    var timeSinceLastBeat = new Date().getTime() - metronome.lastBeat;
+    var progressPercent = 100.0 / metronome.interval * timeSinceLastBeat;
+    document.getElementById("progress-bar").style.width = progressPercent + "%";
+}, 1000 / 25);
 
-onReset();
-
-
-
+resetMetronome();
