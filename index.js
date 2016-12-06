@@ -1,6 +1,9 @@
 var app = angular.module('app', []);
 
-var snd = new Audio("click-short.wav");
+var sound = new Howl({
+    src: ['click-short.wav']
+});
+
 var MAX_SAMPLES = 6;
 
 app.controller('MainCtrl', ["$interval", function ($interval) {
@@ -16,7 +19,7 @@ app.controller('MainCtrl', ["$interval", function ($interval) {
     };
 
     self.onBeat = function () {
-        snd.play();
+        sound.play();
         self.lastBeat = new Date().getTime()
     };
 
@@ -58,11 +61,11 @@ app.controller('MainCtrl', ["$interval", function ($interval) {
         self.lastPressedBeat = now;
     };
 
-    // Update UI with 25fps (1000 / 25 = 40)
+    // Update UI with 25fps
     self.intervalPromise = $interval(function () {
         var timeSinceLastBeat = new Date().getTime() - self.lastBeat ;
         self.progressPercent = 100.0 / self.interval * timeSinceLastBeat;
-    }, 40);
+    }, 1000/25);
 
     self.onReset();
 
