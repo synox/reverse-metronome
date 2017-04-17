@@ -1,72 +1,86 @@
-var app = angular.module('app', []);
+(function () {
+    var sound = new Howl({
+        src: ['click-short.wav']
+    });
 
-var sound = new Howl({
-    src: ['click-short.wav']
-});
+    var MAX_SAMPLES = 6;
 
-var MAX_SAMPLES = 6;
+    var metronome = null;
+    var beatTimer = null;
 
-app.controller('MainCtrl', ["$interval", function ($interval) {
-    var self = this;
-
-    self.onReset = function () {
-        self.diffs = [];
-        self.interval = null;
-        self.lastBeat = null;
-        self.lastPressedBeat = null;
-        $interval.cancel(self.beatTimer);
-        self.progressPercent = 0;
+    var resetMetronome = function () {
+        metronome = {
+            diffs: [],
+            interval: null,
+            lastBeat: null,
+            lastPressedBeat: null
+        };
+        clearInterval(beatTimer);
+        document.getElementById("playDetails").style.visibility = 'hidden';
+        document.getElementById("pressAgainHint").style.visibility = 'hidden';
     };
 
-    self.onBeat = function () {
+    document.getElementById("stopButton").onclick = resetMetronome;
+
+    var playBeat = function () {
         sound.play();
-        self.lastBeat = new Date().getTime()
+        metronome.lastBeat = new Date().getTime()
     };
 
-    self.onMeasure = function () {
+    document.getElementById("measureButton").onclick = function () {
         var now = new Date().getTime();
-        if (self.lastBeat) {
-            var diff = now - self.lastPressedBeat;
+        if (metronome.lastBeat) {
+            var diff = now - metronome.lastPressedBeat;
             // if we missed more than 1 beat, measure since last beat
-            if ( diff > self.interval * 2){
-                diff = now - self.lastBeat;
+            if (diff > metronome.interval * 2) {
+                diff = now - metronome.lastBeat;
                 // if the difference is small, measure since previous beat
                 // if we hit just after the beat, we have to increase the interval (instead of setting a very short one)
-                if ( diff < self.interval / 3) {
-                    diff += self.interval;
+                if (diff < metronome.interval / 3) {
+                    diff += metronome.interval;
                 }
             }
-            self.diffs.push(diff);
+            metronome.diffs.push(diff);
 
             // remove oldest samples:
-            if (self.diffs.length > MAX_SAMPLES){
-                self.diffs.splice(0, self.diffs.length - MAX_SAMPLES);
+            if (metronome.diffs.length > MAX_SAMPLES) {
+                metronome.diffs.splice(0, metronome.diffs.length - MAX_SAMPLES);
             }
 
-            var sumOfDiffs = self.diffs.reduce(function (v1, v2) {
+            var sumOfDiffs = metronome.diffs.reduce(function (v1, v2) {
                 return v1 + v2;
             }, 0);
 
             // average:
-            self.interval = sumOfDiffs / self.diffs.length;
+            metronome.interval = sumOfDiffs / metronome.diffs.length;
+            var intervalSeconds = metronome.interval / 1000
+            document.getElementById("interval").textContent = Math.round(intervalSeconds * 100) / 100 + "s";
 
-            self.onBeat();
-            $interval.cancel(self.beatTimer);
-            self.beatTimer = $interval(function () {
-                self.onBeat();
-            }, self.interval);
+            playBeat();
+            clearInterval(beatTimer);
+            beatTimer = setInterval(playBeat, metronome.interval);
+
+            document.getElementById("playDetails").style.visibility = 'visible';
+            document.getElementById("pressAgainHint").style.visibility = 'hidden';
+        } else {
+            document.getElementById("pressAgainHint").style.visibility = 'visible';
         }
 
-        self.lastBeat = now;
-        self.lastPressedBeat = now;
+        console.log(metronome.diffs);
+
+        metronome.lastBeat = now;
+        metronome.lastPressedBeat = now;
     };
 
-    // Update UI with 25fps
-    self.intervalPromise = $interval(function () {
-        var timeSinceLastBeat = new Date().getTime() - self.lastBeat ;
-        self.progressPercent = 100.0 / self.interval * timeSinceLastBeat;
-    }, 1000/25);
 
-    self.onReset();
+// Update UI with 25fps
+    setInterval(function () {
+        var timeSinceLastBeat = new Date().getTime() - metronome.lastBeat;
+        var progressPercent = 100.0 / metronome.interval * timeSinceLastBeat;
 
-}]);
+        document.getElementById("progress-bar").style.width = progressPercent + "%";
+    }, 1000 / 25);
+
+    resetMetronome();
+
+})();
